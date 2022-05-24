@@ -1,0 +1,43 @@
+#Common Cisco Variables:
+HOST: R1
+MGMT_SRC_INT: loopback0
+SNMP_GRP: V3GRP
+SNMP_VIEW: V3VIEW
+SNMP_ACL: V3ACL
+
+TAC_SVR_GRP1: YOURMOM
+TAC_SVR_IP1: 1.1.1.1
+TAC_SVR_KEY1: abc123
+
+TAC_SVR_GRP2: YOURSIS
+TAC_SVR_IP2: 2.2.2.2
+TAC_SVR_KEY2: abc123
+
+TAC_SVR_GRP3: YOURCOUSIN
+TAC_SVR_IP3: 3.3.3.3
+TAC_SVR_KEY3: abc123
+
+VTY_ACL: 100
+
+NTP_KEY_ID: 99
+NTP_KEY: testKEY
+
+COPP_POLICY: COPPPOL
+
+LOG_HOST1: 5.5.5.5
+MGMT_VRF: mgmtVRF
+
+#Cisco Router Variables:
+routerinterfaces:
+  - name: Gigabitethernet0/0
+    description: test1int
+    enabled: yes
+  - name: Gigabitethernet0/1
+    description: test2int
+    enabled: no
+
+#Cisco Switch VARIABLES:
+DOT1X_MODE: single-host
+USER_VLAN: 2600
+STORM_UNICAST: 50
+STORM_BROADCAST: 235

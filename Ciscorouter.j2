@@ -1,0 +1,98 @@
+hostname {{HOST}}
+!
+service password-encryption
+!
+aaa authentication login default group ISE local
+!
+line vty 0 15
+ login authentication default
+ exec-timeout 10 
+ access-class {{VTY_ACL}} in vrf-also
+!
+no snmp-server community public RO
+no snmp-server community private RW
+!
+snmp-server group {{SNMP_GRP}} v3 auth read {{SNMP_VIEW}} access {{SNMP_ACL}}
+snmp-server trap-source {{MGMT_SRC_INT}} vrf {{MGMT_VRF}}
+!
+line con 0
+ login autentication default
+!
+aaa new-model
+tacacs server {{TAC_SVR_GRP1}}
+ address ipv4 {{TAC_SVR_IP1}}
+ key 0 {{TAC_SVR_KEY1}}
+!
+tacacs server {{TAC_SVR_GRP2}}
+ address ipv4 {{TAC_SVR_IP2}}
+ key 0 {{TAC_SVR_KEY2}}
+ !
+ tacacs server {{TAC_SVR_GRP3}}
+ address ipv4 {{TAC_SVR_IP3}}
+ key 0 {{TAC_SVR_KEY3}}
+ !
+aaa group server tacacs+ ISE
+ server name {{TAC_SVR_GRP1}}
+ server name {{TAC_SVR_GRP2}}
+ server name {{TAC_SVR_GRP3}}
+ !
+ip tcp synwait-time 10
+service tcp-keepalives-in
+!
+no ip rcmd rcp-enable
+no ip rcmd rsh-enable
+!
+no service pad
+no service call-home
+no service tcp-small-servers
+no service udp-small-servers
+no ip identd
+no ip finger
+!
+ntp authentication-key {{NTP_KEY_ID}} md5 {{NTP_KEY}}
+ntp trusted-key {{NTP_KEY_ID}}
+ntp source {{MGMT_SRC_INT}} vrf {{MGMT_VRF}}
+!
+line con 0
+ exec-timeout 10
+ !
+control-plane 
+ service-policy input {{COPP_POLICY}}
+!
+ip ssh version 2
+ip ssh time-out 60
+ip ssh authentication-retries 3
+!
+ip cef distributed
+!
+no ip gratuitous-arp
+no ip http-server
+no ip source-route
+!
+logging on
+login on-failure log every 1
+login on-success log every 1
+!
+logging host {{LOG_HOST1}} vrf {{MGMT_VRF}}
+logging console informational
+logging source-interface {{MGMT_SRC_INT}} vrf {{MGMT_VRF}}
+!
+ip flow export source {{MGMT_SRC_INT}} vrf {{MGMT_VRF}}
+ip tftp source-interface {{MGMT_SRC_INT}} vrf {{MGMT_VRF}}
+ip ftp source-interface {{MGMT_SRC_INT}} vrf {{MGMT_VRF}}
+!
+no ip domain-lookup
+no ip bootp server
+!
+line aux 0
+ no exec
+!
+{% for interface in routerinterfaces %}
+interface {{ interface['name'] }}
+  description {{ interface['description'] }}
+  ip address {{ interface['ip'] }} {{ interface['mask'] }}
+  no ip redirect
+  no ip proxy-arp
+  {% if interface['enabled'] %}  no {% endif %}shutdown
+{% endfor %}
+!
